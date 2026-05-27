@@ -1,16 +1,25 @@
-# This is a sample Python script.
+import tkinter as tk
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from editor import MyTextField
+from piecetree import PieceTree
+from treeschema import TreeSchema
 
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.geometry("960x640")
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+    main_frame = tk.Frame(root)
+    main_frame.pack(fill="both", expand=True)
+    main_frame.grid_rowconfigure(0, weight=2)
+    main_frame.grid_rowconfigure(1, weight=3)
+    main_frame.grid_columnconfigure(0, weight=1)
 
+    piece_tree = PieceTree()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    tree_schema = TreeSchema(main_frame, piece_tree)
+    tree_schema.grid(row=0, column=0, sticky="nsew", padx=10, pady=(10, 5))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    text_field = MyTextField(main_frame, piece_tree)
+    text_field.grid(row=1, column=0, sticky="nsew", padx=10, pady=(5, 10))
+
+    root.mainloop()
