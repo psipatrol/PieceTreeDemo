@@ -13,11 +13,11 @@ class MyTextField(tk.Frame):
         self.render()
 
     def on_click(self, event):
-        print(f"sym: {event.keysym}, state: {event.state}")
-        cursor_index = self.text.index(tk.INSERT)
-        print(cursor_index)
+        self.cursor_index = self.text.index(tk.INSERT)
+        chars_count = self.text.count("1.0", self.cursor_index, "chars") or (0,)
+        absolute_index = chars_count[0]
         if 8 <= event.state <= 12:
-            self.tree.insert_char(cursor_index, event.char)
+            self.tree.insert_char(absolute_index, event.char)
             self.render()
             return "break"
 
