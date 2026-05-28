@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from editor import MyTextField
-from piecetree import PieceTree
-from treeschema import TreeSchema
+from ui.editor import MyTextField
+from data.piecetree import PieceTree
+from ui.treeschema import TreeSchema
 
 if __name__ == "__main__":
     root = tk.Tk()
