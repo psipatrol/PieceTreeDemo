@@ -1,3 +1,5 @@
+import math
+
 from data.buffers import BufferType
 from data.node import Node
 
@@ -62,10 +64,18 @@ class PieceTree:
         text_r = self.in_order(node.right_child)
         return text_l + text + text_r
 
+    def in_order_gen(self, node, offset = 0, depth = 1):
+        if node is None:
+            return None
+
+        yield from self.in_order_gen(node.left_child, int(offset - 100/depth), depth + 1)
+        yield node, offset, depth
+        yield from self.in_order_gen(node.right_child, int(offset + 100/depth), depth + 1)
+        return None
+
     def read_from_buffer(self, node):
         match node.buffer_type:
             case BufferType.ORIGINAL:
-                print(f"read {self.original_text[node.start_index:node.start_index + node.length]} from original buffer")
                 return self.original_text[node.start_index:node.start_index + node.length]
             case BufferType.ADDED:
                 return self.added_text[node.start_index:node.start_index + node.length]

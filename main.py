@@ -19,7 +19,7 @@ if __name__ == "__main__":
     tree_schema = TreeSchema(main_frame, piece_tree)
     tree_schema.grid(row=0, column=0, sticky="nsew", padx=10, pady=(10, 5))
 
-    text_field = MyTextField(main_frame, piece_tree)
+    text_field = MyTextField(main_frame, piece_tree, tree_schema)
     text_field.grid(row=1, column=0, sticky="nsew", padx=10, pady=(5, 10))
 
     root.mainloop()
