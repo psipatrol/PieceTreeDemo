@@ -69,6 +69,37 @@ class PieceTree:
             else:
                 self.insert_to_tree(node.right_child, global_index, buffer_start_index, current_node_end)
 
+    def delete_at_index(self, index):
+        self.delete_from_tree(self.root, index)
+
+    def delete_from_tree(self, node, global_index, offset = 0):
+        if node is None:
+            return
+
+        left_subtree_len = self.get_subtree_len(node.left_child)
+        current_node_start = offset + left_subtree_len
+        current_node_end = current_node_start + node.length
+
+        # go left
+        if global_index < current_node_start:
+            self.delete_from_tree(node.left_child, global_index, offset)
+
+        # cut
+        if current_node_start <= global_index < current_node_end:
+            left_length = global_index - current_node_start - 1
+
+            left_family = node.left_child
+
+            node.left_child = Node(buffer_type=node.buffer_type, start_index=node.start_index, length=left_length)
+            node.left_child.left_child = left_family
+
+            node.start_index += (left_length + 1)
+            node.length -= (left_length + 1)
+
+        # go right
+        if global_index >= current_node_end:
+            self.delete_from_tree(node.right_child, global_index, current_node_end)
+
     # PARAMETERS
     def get_subtree_len(self, node):
         if node is None:

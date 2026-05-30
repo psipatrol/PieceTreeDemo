@@ -18,6 +18,11 @@ class MyTextField(tk.Frame):
         chars_count = self.text.count("1.0", self.cursor_index, "chars") or (0,)
         absolute_index = chars_count[0]
         if 8 <= event.state <= 12:
+            if event.keysym == "BackSpace":
+                self.tree.delete_at_index(absolute_index)
+                self.render()
+                self.schema.render()
+                return "break"
             self.tree.insert_char(absolute_index, event.char)
             self.render()
             self.schema.render()
