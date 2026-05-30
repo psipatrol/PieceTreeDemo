@@ -40,39 +40,71 @@ class PieceTree:
             else:
                 self.insert_to_tree(node.left_child, global_index, buffer_start_index, offset)
 
+        #split
+        if current_node_start < global_index < current_node_end:
+            left_length = global_index - current_node_start
+            right_length = node.length - left_length
+
+            left_family = node.left_child
+            right_family = node.right_child
+
+            node.left_child = Node(buffer_type=node.buffer_type, start_index=node.start_index, length=left_length)
+            node.left_child.left_child = left_family
+
+            node.right_child = Node(buffer_type=node.buffer_type, start_index=node.start_index + left_length, length=right_length)
+            node.right_child.right_child = right_family
+
+            node.start_index = buffer_start_index
+            node.buffer_type = BufferType.ADDED
+            node.length = 1
+
         #go right
         if global_index >= current_node_end:
+            #merge
+            if node.buffer_type == BufferType.ADDED and global_index == current_node_end and buffer_start_index == node.start_index + node.length:
+                node.length += 1
+                return
             if node.right_child is None:
                 node.right_child = Node(buffer_type=BufferType.ADDED, start_index=buffer_start_index, length=1)
             else:
                 self.insert_to_tree(node.right_child, global_index, buffer_start_index, current_node_end)
 
+    # PARAMETERS
     def get_subtree_len(self, node):
         if node is None:
             return 0
         return self.get_subtree_len(node.left_child) + node.length + self.get_subtree_len(node.right_child)
 
-    def get_text(self):
-        text = self.in_order(self.root)
-        return text
+    def get_spread(self, node):
+        return max(self.get_max_spread_left(node), self.get_max_spread_right(node))
 
-    def in_order(self, node):
+    def get_max_spread_left(self, node):
         if node is None:
-            return ""
-        text_l = self.in_order(node.left_child)
-        text = self.read_from_buffer(node)
-        text_r = self.in_order(node.right_child)
-        return text_l + text + text_r
+            return 0
+        return self.get_max_spread_left(node.left_child) + 1
+
+    def get_max_spread_right(self, node):
+        if node is None:
+            return 0
+        return self.get_max_spread_right(node.right_child) + 1
+
+    # TRAVERSING
+    def get_text(self):
+        gen = self.in_order_gen(self.root)
+        text = ""
+        for n in gen:
+            text += self.read_from_buffer(n[0])
+        return text
 
     def in_order_gen(self, node, offset = 0, depth = 1):
         if node is None:
             return None
-
-        yield from self.in_order_gen(node.left_child, int(offset - 100/depth), depth + 1)
+        yield from self.in_order_gen(node.left_child, offset - 1/(2**depth), depth + 1)
         yield node, offset, depth
-        yield from self.in_order_gen(node.right_child, int(offset + 100/depth), depth + 1)
+        yield from self.in_order_gen(node.right_child, offset + 1/(2**depth), depth + 1)
         return None
 
+    # READING BUFFER
     def read_from_buffer(self, node):
         match node.buffer_type:
             case BufferType.ORIGINAL:
