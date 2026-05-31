@@ -1,0 +1,2 @@
+class BufferNotFoundException(Exception):
+    pass

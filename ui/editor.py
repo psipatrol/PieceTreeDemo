@@ -19,18 +19,21 @@ class MyTextField(tk.Frame):
         absolute_index = chars_count[0]
         if 8 <= event.state <= 12:
             if event.keysym == "BackSpace":
-                self.tree.delete_at_index(absolute_index)
-                self.render()
-                self.schema.render()
+                if absolute_index > 0:
+                    self.tree.delete_at_index(absolute_index - 1)
+                    self.render(absolute_index - 1)
+                    self.schema.render()
                 return "break"
-            self.tree.insert_char(absolute_index, event.char)
-            self.render()
-            self.schema.render()
-            return "break"
+            else:
+                if event.char:
+                    self.tree.insert_char(absolute_index, event.char)
+                    self.render(absolute_index + 1)
+                    self.schema.render()
+                return "break"
 
-    def render(self):
-        self.cursor_index = self.text.index(tk.INSERT)
+    def render(self, new_index=None):
         self.text.delete("1.0", tk.END)
         self.text.insert("1.0", self.tree.get_text())
-        if self.cursor_index != 0:
-            self.text.mark_set("insert", f"{self.cursor_index.split(".")[0]}.%d" % (int(self.cursor_index.split(".")[1]) + 1))
+        if new_index is not None:
+            self.text.mark_set("insert", f"1.0+{new_index}c")
+
