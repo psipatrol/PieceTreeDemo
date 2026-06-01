@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 
 class MyTextField(tk.Frame):
     def __init__(self, root, tree, schema):
@@ -10,6 +11,8 @@ class MyTextField(tk.Frame):
         self.text.bind("<Key>", self.on_click)
 
         self.cursor_index = 0
+
+        self.text.tag_configure("found", background="cyan")
 
         self.render()
 
@@ -37,3 +40,15 @@ class MyTextField(tk.Frame):
         if new_index is not None:
             self.text.mark_set("insert", f"1.0+{new_index}c")
 
+    def search(self, pattern):
+        self.text.tag_remove("found", "1.0", tk.END)
+        if not pattern:
+            return
+
+        try:
+            for match in re.finditer(pattern, self.text.get("1.0", "end-1c")):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.text.tag_add("found", start, end)
+        except re.error:
+            pass

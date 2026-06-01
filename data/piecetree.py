@@ -15,13 +15,32 @@ class PieceTree:
         self.added_text = ""
 
         try:
-            with open(str(self.original_buffer_path), "r") as f:
+            with open(str(self.original_buffer_path), "r", encoding = "utf-8") as f:
                 self.original_text = f.read()
         except FileNotFoundError:
             raise BufferNotFoundException("meow")
 
         self.root = Node(buffer_type=BufferType.ORIGINAL, start_index=0, length=len(self.original_text))
 
+    # FILES
+    def load_file(self, path):
+        try:
+            with open(str(path), "r", encoding = "utf-8") as f:
+                self.original_text = f.read()
+                self.added_text = ""
+                self.original_buffer_path = path
+        except FileNotFoundError:
+            raise BufferNotFoundException("meow")
+
+    def save_file(self, path = None):
+        try:
+            save_path = path or self.original_buffer_path
+            with open(str(save_path), "w", encoding = "utf-8") as f:
+                f.write(self.get_text())
+        except FileNotFoundError:
+            raise BufferNotFoundException("meow")
+
+    # OPERATIONS
     @debug
     def insert_char(self, index, char):
         if char == '\r':
